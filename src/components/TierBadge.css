@@ -1,0 +1,61 @@
+.tier {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tier__medal {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: linear-gradient(180deg, var(--bg-1), var(--black));
+  border: 2px solid var(--tier-color);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--tier-color) 40%, transparent);
+}
+
+.tier__letter {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.1rem;
+  color: var(--tier-color);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--tier-color) 55%, transparent);
+}
+
+.tier--S { --tier-color: var(--tier-s); }
+.tier--A { --tier-color: var(--tier-a); }
+.tier--B { --tier-color: var(--tier-b); }
+.tier--C { --tier-color: var(--tier-c); }
+.tier--D { --tier-color: var(--tier-d); }
+.tier--F { --tier-color: var(--tier-f); }
+
+.tier__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tier__name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--gold-bright);
+  font-weight: 600;
+}
+
+.tier__score {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.tier__score small {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-weight: 500;
+}
