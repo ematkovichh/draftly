@@ -4,6 +4,8 @@ Generate role-accurate 5-player team comps and get a draft analysis that is
 **derived entirely from real Riot champion data** — no random or hand-assigned
 scores.
 
+https://ematkovichh.github.io/draftly/
+
 ## What's real
 
 - **Champion data & art:** live from Riot **Data Dragon** (latest patch, no API
