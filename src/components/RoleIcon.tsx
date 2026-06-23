@@ -1,65 +1,11 @@
 import type { Role } from '../core/types'
-
-interface Props {
-  role: Role
-  size?: number
-  className?: string
+const P: Record<Role,string> = {
+  top:     'M4 4h6v6H4zM14 4h6v6h-6zM9 10h6v4H9zM11 14h2v6h-2z',
+  jungle:  'M12 3a9 9 0 109 9A9 9 0 0012 3zm-1 13V8l7 4z',
+  mid:     'M3 21L21 3M3 3l18 18',
+  adc:     'M3 3h7v7H3zM14 3h7v7h-7zM8.5 10v4M15.5 10v4M3 14h18',
+  support: 'M12 21C12 21 4 16 4 10a5 5 0 0116 0C20 16 12 21 12 21z',
 }
-
-/**
- * Minimal hextech-styled lane glyphs drawn as inline SVG so they always
- * load and inherit the gold colour. Stylised to read at small sizes.
- */
-export function RoleIcon({ role, size = 22, className }: Props) {
-  const common = {
-    width: size,
-    height: size,
-    viewBox: '0 0 24 24',
-    className,
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.6,
-    strokeLinejoin: 'round' as const,
-    strokeLinecap: 'round' as const,
-  }
-  switch (role) {
-    case 'top':
-      return (
-        <svg {...common} aria-hidden>
-          <path d="M4 20V4h16" />
-          <path d="M4 4l6 6" />
-          <rect x="13" y="13" width="6" height="6" rx="1" />
-        </svg>
-      )
-    case 'jungle':
-      return (
-        <svg {...common} aria-hidden>
-          <path d="M12 21c0-5 0-8-4-12" />
-          <path d="M12 21c0-5 0-8 4-12" />
-          <path d="M8 9C8 5 12 3 12 3s4 2 4 6" />
-        </svg>
-      )
-    case 'mid':
-      return (
-        <svg {...common} aria-hidden>
-          <path d="M4 20L20 4" />
-          <path d="M14 4h6v6" />
-          <path d="M10 20H4v-6" />
-        </svg>
-      )
-    case 'adc':
-      return (
-        <svg {...common} aria-hidden>
-          <path d="M20 20H4V4" />
-          <path d="M20 20l-6-6" />
-          <rect x="5" y="5" width="6" height="6" rx="1" />
-        </svg>
-      )
-    case 'support':
-      return (
-        <svg {...common} aria-hidden>
-          <path d="M12 21s-7-4.3-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.7-7 10-7 10z" />
-        </svg>
-      )
-  }
+export function RoleIcon({ role, className='' }: { role:Role; className?:string }) {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} width="100%" height="100%"><path d={P[role]}/></svg>
 }

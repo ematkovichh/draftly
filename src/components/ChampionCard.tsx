@@ -1,109 +1,78 @@
-import { useEffect, useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 import type { Champion, Role } from '../core/types'
 import { ROLE_LABEL } from '../core/draft'
-import { loadingUrl, splashUrl } from '../data/art'
+import { championDataProvider } from '../data/providers/registry'
 import { RoleIcon } from './RoleIcon'
 import './ChampionCard.css'
 
 interface Props {
+  champion: Champion
   role: Role
-  champion: Champion | null
-  onReroll: (role: Role) => void
   index: number
+  onReroll: () => void
+  isNew?: boolean
 }
 
-function RerollGlyph() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M21 12a9 9 0 1 1-2.64-6.36" />
-      <path d="M21 4v5h-5" />
-    </svg>
-  )
-}
+export function ChampionCard({ champion, role, index, onReroll, isNew }: Props) {
+  const [imgLoaded, setImgLoaded] = useState(false)
+  const [imgError, setImgError] = useState(false)
 
-export function ChampionCard({ role, champion, onReroll, index }: Props) {
-  const [loaded, setLoaded] = useState(false)
-  const [failed, setFailed] = useState(false)
-
-  // Reset the loading state each time the champion in this slot changes.
-  useEffect(() => {
-    setLoaded(false)
-    setFailed(false)
-  }, [champion?.id])
+  const splashSrc = imgError
+    ? championDataProvider.squareUrl(champion.id)
+    : championDataProvider.splashUrl(champion.id)
 
   return (
     <motion.div
-      className={`card ${loaded ? 'loaded' : ''}`}
-      initial={{ opacity: 0, y: 28 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: index * 0.06, ease: [0.2, 0.8, 0.2, 1] }}
+      className="card"
+      layout
+      initial={isNew ? { opacity: 0, y: 28, scale: 0.93 } : false}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.45, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
     >
+      {/* Art */}
       <div className="card__art">
-        <AnimatePresence mode="wait">
-          {champion && (
-            <motion.img
-              key={champion.id}
-              src={failed ? loadingUrl(champion.id) : splashUrl(champion.id)}
-              alt={`${champion.name} splash art`}
-              loading="lazy"
-              initial={{ opacity: 0, scale: 1.08 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              onLoad={() => setLoaded(true)}
-              onError={() => {
-                if (!failed) setFailed(true)
-                else setLoaded(true)
-              }}
-            />
-          )}
-        </AnimatePresence>
+        {!imgLoaded && <div className="card__shimmer" />}
+        <img
+          src={splashSrc}
+          alt={champion.name}
+          className={`card__img card__img--${champion.id}`}
+          onLoad={() => setImgLoaded(true)}
+          onError={() => { setImgError(true); setImgLoaded(true) }}
+          style={{ opacity: imgLoaded ? 1 : 0 }}
+        />
+        <div className="card__vignette" />
+        <div className={`card__dmg-glow card__dmg-glow--${champion.damageType}`} />
+      </div>
 
-        <div className="card__scrim" />
-
-        <div className="card__role">
-          <RoleIcon role={role} size={15} />
+      {/* Top badges */}
+      <div className="card__top">
+        <div className="card__role-badge">
+          <RoleIcon role={role} />
           <span>{ROLE_LABEL[role]}</span>
         </div>
+        <span className={`card__dmg-badge card__dmg-badge--${champion.damageType}`}>{champion.damageType}</span>
+      </div>
 
-        {champion && (
-          <div className={`card__damage dmg-${champion.damageType}`}>
-            {champion.damageType}
-          </div>
-        )}
-
-        <div className="card__body">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={champion?.id ?? 'empty'}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="card__name">{champion?.name ?? '—'}</div>
-              {champion && (
-                <div className="card__tags">
-                  {champion.archetypes.slice(0, 2).map((a) => (
-                    <span className="card__tag" key={a}>
-                      {a}
-                    </span>
-                  ))}
-                  {champion.yordle && <span className="card__tag">yordle</span>}
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+      {/* Bottom info */}
+      <div className="card__bottom">
+        <div className="card__identity">
+          <h3 className="card__name">{champion.name}</h3>
+          <p className="card__title">{champion.title}</p>
+        </div>
+        <div className="card__tags">
+          {champion.archetypes.slice(0, 2).map(a => (
+            <span key={a} className={`card__arch card__arch--${a}`}>{a}</span>
+          ))}
+          {champion.yordle && <span className="card__arch card__arch--yordle">yordle</span>}
         </div>
       </div>
 
-      <button
-        className="card__reroll"
-        onClick={() => onReroll(role)}
-        aria-label={`Reroll ${ROLE_LABEL[role]}`}
-      >
-        <RerollGlyph />
+      {/* Reroll */}
+      <button className="card__reroll" onClick={onReroll} title="Reroll this slot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+          <path d="M23 4v6h-6M1 20v-6h6" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+        </svg>
         Reroll
       </button>
     </motion.div>

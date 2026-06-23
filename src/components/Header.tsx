@@ -1,27 +1,36 @@
-import { motion } from 'framer-motion'
+import type { DatasetInfo } from '../core/types'
 import './Header.css'
 
-export function Header() {
+export function Header({ info }: { info?: DatasetInfo }) {
   return (
-    <header className="masthead">
-      <motion.div
-        className="masthead__brand"
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <span className="masthead__mark" aria-hidden>
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">
-            <path d="M12 2l8 4.5v9L12 22l-8-6.5v-9L12 2z" />
-            <path d="M12 7l4 2.4v4.8L12 17l-4-2.8V9.4L12 7z" />
-          </svg>
-        </span>
+    <header className="header">
+      <div className="header__brand">
+        <svg className="header__hex" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l8 4.5v9L12 22l-8-6.5v-9L12 2z" stroke="#c8aa6e" strokeWidth="1.2"/>
+          <path d="M12 7l4 2.4v4.8L12 17l-4-2.8V9.4L12 7z" stroke="#0ac8b9" strokeWidth="1"/>
+        </svg>
         <div>
-          <h1 className="masthead__title">DRAFTLY</h1>
-          <p className="masthead__tag">Team Composition Forge</p>
+          <h1 className="header__title">DRAFTLY</h1>
+          <p className="header__sub">Team Composition Forge</p>
         </div>
-      </motion.div>
-      <div className="masthead__rule hex-rule" />
+      </div>
+      {info && (
+        <div className="header__databar">
+          <DataChip label="Patch" value={info.patch} />
+          <DataChip label="Champions" value={String(info.championCount)} />
+          <DataChip label="Data" value={info.championDataSource} />
+          <DataChip label="Meta" value={info.metaSource ?? 'not connected'} dim={!info.metaSource} />
+        </div>
+      )}
     </header>
+  )
+}
+
+function DataChip({ label, value, dim }: { label: string; value: string; dim?: boolean }) {
+  return (
+    <span className="data-chip">
+      <small>{label}</small>
+      <em className={dim ? 'data-chip__val--dim' : ''}>{value}</em>
+    </span>
   )
 }

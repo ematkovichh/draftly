@@ -1,39 +1,18 @@
 import { useEffect, useState } from 'react'
 import { loadChampions, type ChampionDataset } from '../services/championService'
 
-interface State {
-  data: ChampionDataset | null
-  loading: boolean
-  error: string | null
-}
-
-/** Loads the live champion dataset from the configured providers. */
-export function useChampions(): State {
-  const [state, setState] = useState<State>({
-    data: null,
-    loading: true,
-    error: null,
-  })
+export function useChampions() {
+  const [data, setData] = useState<ChampionDataset | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let active = true
     loadChampions()
-      .then((data) => {
-        if (active) setState({ data, loading: false, error: null })
-      })
-      .catch((err: unknown) => {
-        if (active)
-          setState({
-            data: null,
-            loading: false,
-            error:
-              err instanceof Error ? err.message : 'Failed to load champion data',
-          })
-      })
-    return () => {
-      active = false
-    }
+      .then(d => { if (active) { setData(d); setLoading(false) } })
+      .catch((e: unknown) => { if (active) { setError(e instanceof Error ? e.message : 'Failed to load'); setLoading(false) } })
+    return () => { active = false }
   }, [])
 
-  return state
+  return { data, loading, error }
 }

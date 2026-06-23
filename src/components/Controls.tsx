@@ -1,25 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import type { Archetype, Challenge, Team } from '../core/types'
-import { copyToClipboard, encodeToUrl, teamToText } from '../utils/share'
+import { ARCHETYPE_META, CHALLENGE_META, encodeTeam } from '../core/draft'
 import './Controls.css'
 
-const ARCHETYPES: { id: Archetype; label: string; hint: string }[] = [
-  { id: 'random', label: 'Random', hint: 'Anything goes' },
-  { id: 'dive', label: 'Dive', hint: 'Hard engage, all-in' },
-  { id: 'poke', label: 'Poke', hint: 'Whittle from range' },
-  { id: 'teamfight', label: 'Teamfight', hint: 'Win the 5v5' },
-  { id: 'scaling', label: 'Scaling', hint: 'Win the long game' },
-]
-
-const CHALLENGES: { id: Challenge; label: string }[] = [
-  { id: 'none', label: 'No Challenge' },
-  { id: 'offMeta', label: 'Off Meta Only' },
-  { id: 'oldSchool', label: 'Old School' },
-  { id: 'fullAP', label: 'Full AP' },
-  { id: 'fullAD', label: 'Full AD' },
-  { id: 'yordle', label: 'Yordle Challenge' },
-]
+const ARCHETYPES: Archetype[] = ['random', 'teamfight', 'poke', 'dive', 'scaling', 'siege']
+const CHALLENGES: Challenge[] = ['none', 'fullAP', 'fullAD', 'yordle', 'oldSchool', 'offMeta']
 
 interface Props {
   archetype: Archetype
@@ -30,100 +16,73 @@ interface Props {
   onChallenge: (c: Challenge) => void
 }
 
-export function Controls({
-  archetype,
-  challenge,
-  team,
-  onGenerate,
-  onArchetype,
-  onChallenge,
-}: Props) {
-  const [toast, setToast] = useState<string | null>(null)
+export function Controls({ archetype, challenge, team, onGenerate, onArchetype, onChallenge }: Props) {
+  const [copied, setCopied] = useState(false)
 
-  const flash = (msg: string) => {
-    setToast(msg)
-    window.setTimeout(() => setToast(null), 1900)
+  function share() {
+    const url = encodeTeam(team, archetype, challenge)
+    navigator.clipboard.writeText(url).catch(() => {})
+    window.history.replaceState(null, '', url)
+    setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleCopy = async () => {
-    const ok = await copyToClipboard(teamToText(team))
-    flash(ok ? 'Composition copied' : 'Copy failed')
-  }
-
-  const handleShare = async () => {
-    const url = encodeToUrl(team, archetype, challenge)
-    const ok = await copyToClipboard(url)
-    flash(ok ? 'Share link copied' : 'Copy failed')
-  }
+  const hasFilled = Object.values(team).some(c => c !== null)
 
   return (
-    <section className="controls">
-      <div className="controls__group">
-        <span className="eyebrow">Team Archetype</span>
-        <div className="seg" role="tablist" aria-label="Team archetype">
-          {ARCHETYPES.map((a) => (
-            <button
-              key={a.id}
-              role="tab"
-              aria-selected={archetype === a.id}
-              className={`seg__btn ${archetype === a.id ? 'is-active' : ''}`}
-              onClick={() => onArchetype(a.id)}
-              title={a.hint}
-            >
-              {a.label}
-            </button>
-          ))}
+    <div className="controls">
+      {/* Archetype selector */}
+      <div className="controls__row">
+        <span className="eyebrow controls__section-label">Team Archetype</span>
+        <div className="seg-tabs">
+          {ARCHETYPES.map(a => {
+            const meta = a === 'random' ? null : ARCHETYPE_META[a]
+            const active = archetype === a
+            return (
+              <button key={a} className={`seg-tab${active ? ' seg-tab--active' : ''}`}
+                onClick={() => onArchetype(a)}
+                style={active && meta ? { borderColor: meta.color, color: meta.color } : undefined}>
+                {meta && <span className="seg-tab__icon">{meta.icon}</span>}
+                {a === 'random' ? 'Random' : a.charAt(0).toUpperCase() + a.slice(1)}
+              </button>
+            )
+          })}
         </div>
       </div>
 
-      <div className="controls__group">
-        <span className="eyebrow">Challenge Mode</span>
-        <div className="seg seg--wrap" role="tablist" aria-label="Challenge mode">
-          {CHALLENGES.map((c) => (
-            <button
-              key={c.id}
-              role="tab"
-              aria-selected={challenge === c.id}
-              className={`seg__btn ${challenge === c.id ? 'is-active' : ''}`}
-              onClick={() => onChallenge(c.id)}
-            >
-              {c.label}
-            </button>
-          ))}
+      {/* Challenge selector */}
+      <div className="controls__row">
+        <span className="eyebrow controls__section-label">Challenge Mode</span>
+        <div className="seg-tabs">
+          {CHALLENGES.map(c => {
+            const { label, icon } = CHALLENGE_META[c]
+            const active = challenge === c
+            return (
+              <button key={c} className={`seg-tab seg-tab--sm${active ? ' seg-tab--active' : ''}`}
+                onClick={() => onChallenge(c)}>
+                <span className="seg-tab__icon">{icon}</span>
+                {label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
+      {/* Action row */}
       <div className="controls__actions">
-        <motion.button
-          className="forge"
-          onClick={onGenerate}
-          whileTap={{ scale: 0.97 }}
-        >
-          <span className="forge__inner">Generate New Team</span>
+        <motion.button className="forge-btn" onClick={onGenerate}
+          whileTap={{ scale: .97 }} whileHover={{ scale: 1.015 }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18">
+            <path d="M12 2l8 4.5v9L12 22l-8-6.5v-9L12 2z" />
+            <path d="M12 8l4 2.2v4.4L12 17l-4-2.4V10.2L12 8z" />
+          </svg>
+          Forge New Team
         </motion.button>
-
-        <div className="controls__secondary">
-          <button className="ghost-btn" onClick={handleShare}>
-            Share Link
+        {hasFilled && (
+          <button className="ghost-btn" onClick={share}>
+            {copied ? '✓ Link copied!' : '⎘ Share'}
           </button>
-          <button className="ghost-btn" onClick={handleCopy}>
-            Copy Team
-          </button>
-        </div>
-      </div>
-
-      <div className="toast-wrap" aria-live="polite">
-        {toast && (
-          <motion.div
-            className="toast"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-          >
-            {toast}
-          </motion.div>
         )}
       </div>
-    </section>
+    </div>
   )
 }

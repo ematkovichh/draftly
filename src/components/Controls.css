@@ -1,143 +1,36 @@
-.controls {
-  margin-top: 26px;
-  display: grid;
-  gap: 20px;
-  position: relative;
-}
+.controls { display: flex; flex-direction: column; gap: 14px; padding: 18px 0 6px; }
+.controls__row { display: flex; flex-direction: column; gap: 8px; }
+.controls__section-label { display: block; }
 
-.controls__group {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
+.seg-tabs { display: flex; flex-wrap: wrap; gap: 5px; }
+.seg-tab {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border: 1px solid var(--line-bright);
+  font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-dim); background: transparent; transition: all .15s;
 }
+.seg-tab:hover { border-color: var(--gold-deep); color: var(--text-bright); }
+.seg-tab--active { border-color: var(--gold); color: var(--gold); background: rgba(200,170,110,.08); }
+.seg-tab--sm { padding: 5px 11px; font-size: .66rem; }
+.seg-tab__icon { font-size: .9em; }
 
-/* segmented control */
-.seg {
-  display: flex;
-  gap: 6px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  padding: 6px;
-}
+.controls__actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding-top: 4px; }
 
-.seg--wrap {
-  flex-wrap: wrap;
+.forge-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 28px; font-size: .84rem; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--gold-shadow) 0%, var(--gold-deep) 100%);
+  border: 1px solid var(--gold); color: var(--gold-bright);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+  transition: background .2s;
 }
-
-.seg__btn {
-  flex: 1 1 auto;
-  min-width: max-content;
-  padding: 9px 14px;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--text);
-  border: 1px solid transparent;
-  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-  white-space: nowrap;
-}
-
-.seg__btn:hover {
-  color: var(--text-bright);
-  background: rgba(200, 170, 110, 0.06);
-}
-
-.seg__btn.is-active {
-  color: var(--black);
-  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
-  border-color: var(--gold);
-}
-
-/* forge / primary generate button */
-.controls__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: center;
-  margin-top: 2px;
-}
-
-.forge {
-  position: relative;
-  flex: 1 1 320px;
-  padding: 2px;
-  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
-  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
-  transition: filter 0.2s ease, box-shadow 0.2s ease;
-}
-
-.forge:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 0 28px rgba(200, 170, 110, 0.28);
-}
-
-.forge__inner {
-  display: block;
-  padding: 16px;
-  background: linear-gradient(180deg, var(--bg-1), var(--black));
-  clip-path: polygon(13px 0, 100% 0, calc(100% - 13px) 100%, 0 100%);
-  color: var(--gold-bright);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 0.98rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.controls__secondary {
-  display: flex;
-  gap: 10px;
-}
+.forge-btn:hover { background: linear-gradient(135deg, var(--gold-deep) 0%, #9a7232 100%); }
 
 .ghost-btn {
-  padding: 13px 18px;
-  border: 1px solid var(--gold-deep);
-  color: var(--gold);
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-weight: 600;
-  transition: background 0.18s ease, color 0.18s ease;
+  padding: 12px 20px; font-size: .74rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  border: 1px solid var(--line-bright); color: var(--text-dim);
+  transition: all .15s;
 }
-
-.ghost-btn:hover {
-  background: rgba(200, 170, 110, 0.1);
-  color: var(--gold-bright);
-}
-
-/* toast */
-.toast-wrap {
-  position: fixed;
-  left: 50%;
-  bottom: 26px;
-  transform: translateX(-50%);
-  z-index: 50;
-  pointer-events: none;
-}
-
-.toast {
-  padding: 11px 20px;
-  background: var(--panel-2);
-  border: 1px solid var(--gold);
-  color: var(--gold-bright);
-  font-size: 0.74rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  box-shadow: 0 10px 30px rgba(1, 10, 19, 0.6);
-}
-
-@media (max-width: 620px) {
-  .controls__actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .controls__secondary {
-    justify-content: stretch;
-  }
-  .controls__secondary .ghost-btn {
-    flex: 1;
-    text-align: center;
-  }
-}
+.ghost-btn:hover { border-color: var(--cyan); color: var(--cyan); }
