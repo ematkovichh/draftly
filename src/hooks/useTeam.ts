@@ -7,6 +7,11 @@ import { decodeFromUrl } from '../utils/share'
 
 const empty = (): Team => ROLES.reduce((t, r) => ({ ...t, [r]: null }), {} as Team)
 const emptyRevealKeys = (): Record<Role, number> => ROLES.reduce((keys, role) => ({ ...keys, [role]: 0 }), {} as Record<Role, number>)
+const rerollHistoryFor = (team: Team): Record<Role, Set<string>> => ROLES.reduce((history, role) => {
+  const champion = team[role]
+  history[role] = new Set(champion ? [champion.id] : [])
+  return history
+}, {} as Record<Role, Set<string>>)
 const advanceAllRevealKeys = (current: Record<Role, number>): Record<Role, number> => {
   const nextKey = Math.max(...ROLES.map(role => current[role])) + 1
   return ROLES.reduce((next, role) => ({ ...next, [role]: nextKey }), {} as Record<Role, number>)
@@ -30,24 +35,27 @@ export function useTeam(dataset: ChampionDataset) {
   const [revealKeys, setRevealKeys] = useState<Record<Role, number>>(emptyRevealKeys)
   const archRef = useRef(archetype); archRef.current = archetype
   const chalRef = useRef(challenge); chalRef.current = challenge
+  const rerollHistoryRef = useRef<Record<Role, Set<string>>>(rerollHistoryFor(empty()))
 
   useEffect(() => {
     const decoded = decodeFromUrl(dataset.byId)
     setBans([])
     setIsManualDraft(false)
     setIsLocked(false)
+    const nextTeam = decoded?.team ?? engine.generate('random', 'none')
     if (decoded) {
-      setTeam(decoded.team)
       setArchetype(decoded.archetype)
       setChallenge(decoded.challenge)
-    } else {
-      setTeam(engine.generate('random', 'none'))
-      setRevealKeys(advanceAllRevealKeys)
     }
+    setTeam(nextTeam)
+    rerollHistoryRef.current = rerollHistoryFor(nextTeam)
+    setRevealKeys(advanceAllRevealKeys)
   }, [engine, dataset])
 
   const generate = useCallback(() => {
-    setTeam(engine.generate(archRef.current, chalRef.current))
+    const nextTeam = engine.generate(archRef.current, chalRef.current)
+    setTeam(nextTeam)
+    rerollHistoryRef.current = rerollHistoryFor(nextTeam)
     setBans([])
     setIsManualDraft(false)
     setIsLocked(false)
@@ -56,26 +64,29 @@ export function useTeam(dataset: ChampionDataset) {
 
   const reroll = useCallback((role: Role) => {
     if (isManualDraft) return
-    setTeam(prev => {
-      const teammateIds = ROLES
-        .filter(otherRole => otherRole !== role)
-        .map(otherRole => prev[otherRole]?.id)
-        .filter((id): id is string => Boolean(id))
-      return { ...prev, [role]: engine.roll(role, archRef.current, chalRef.current, prev[role]?.id, teammateIds) }
-    })
+    const teammateIds = ROLES
+      .filter(otherRole => otherRole !== role)
+      .map(otherRole => team[otherRole]?.id)
+      .filter((id): id is string => Boolean(id))
+    const nextChampion = engine.reroll(role, chalRef.current, team[role], teammateIds, rerollHistoryRef.current[role])
+    setTeam(current => ({ ...current, [role]: nextChampion }))
+    rerollHistoryRef.current[role].add(nextChampion.id)
     setRevealKeys(current => ({ ...current, [role]: current[role] + 1 }))
-  }, [engine, isManualDraft])
+  }, [engine, isManualDraft, team])
 
   const changeArchetype = useCallback((a: Archetype) => {
-    setArchetype(a); setTeam(engine.generate(a, chalRef.current)); setBans([]); setIsManualDraft(false); setIsLocked(false); setRevealKeys(advanceAllRevealKeys)
+    const nextTeam = engine.generate(a, chalRef.current)
+    setArchetype(a); setTeam(nextTeam); rerollHistoryRef.current = rerollHistoryFor(nextTeam); setBans([]); setIsManualDraft(false); setIsLocked(false); setRevealKeys(advanceAllRevealKeys)
   }, [engine])
 
   const changeChallenge = useCallback((c: Challenge) => {
-    setChallenge(c); setTeam(engine.generate(archRef.current, c)); setBans([]); setIsManualDraft(false); setIsLocked(false); setRevealKeys(advanceAllRevealKeys)
+    const nextTeam = engine.generate(archRef.current, c)
+    setChallenge(c); setTeam(nextTeam); rerollHistoryRef.current = rerollHistoryFor(nextTeam); setBans([]); setIsManualDraft(false); setIsLocked(false); setRevealKeys(advanceAllRevealKeys)
   }, [engine])
 
   const startManualDraft = useCallback(() => {
     setTeam(empty())
+    rerollHistoryRef.current = rerollHistoryFor(empty())
     setBans([])
     setIsManualDraft(true)
     setIsLocked(false)

@@ -58,4 +58,21 @@ describe('DraftEngine', () => {
 
     expect(engine.roll('top', 'random', 'none', undefined, ['Flex', 'AP-top'])).toMatchObject({ id: 'AD-top' })
   })
+
+  it('rerolls from the full eligible role pool, not only the team archetype', () => {
+    const topPoke = champion('Poke-top', ['top'])
+    const topDive = { ...champion('Dive-top', ['top']), archetypes: ['dive' as const] }
+    const engine = new DraftEngine([topPoke, topDive])
+
+    expect(engine.reroll('top', 'none', topPoke, [], [topPoke.id])).toMatchObject({ id: 'Dive-top' })
+  })
+
+  it('does not repeat a seen champion while a fresh role option exists', () => {
+    const first = champion('First-top', ['top'])
+    const seen = champion('Seen-top', ['top'])
+    const fresh = champion('Fresh-top', ['top'])
+    const engine = new DraftEngine([first, seen, fresh])
+
+    expect(engine.reroll('top', 'none', first, [], [first.id, seen.id])).toMatchObject({ id: 'Fresh-top' })
+  })
 })

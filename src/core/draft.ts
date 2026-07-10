@@ -53,16 +53,46 @@ export class DraftEngine {
   }
 
   pool(role: Role, arch: Archetype, ch: Challenge): Champion[] {
-    const base = this.byRole[role]
-    const byChallenge = base.filter(c => this.matchChallenge(c, ch))
-    const usable = byChallenge.length ? byChallenge : base
+    const usable = this.rerollPool(role, ch)
     if (arch === 'random') return usable
     const byArch = usable.filter(c => c.archetypes.includes(arch as Exclude<Archetype,'random'>))
     return byArch.length ? byArch : usable
   }
 
+  /**
+   * Rerolls deliberately use the entire eligible role pool rather than the
+   * selected team archetype. An archetype guides a newly generated team, but
+   * should not make a player cycle through the same few champions on a card.
+   */
+  rerollPool(role: Role, ch: Challenge): Champion[] {
+    const base = this.byRole[role]
+    const byChallenge = base.filter(c => this.matchChallenge(c, ch))
+    return byChallenge.length ? byChallenge : base
+  }
+
   roll(role: Role, arch: Archetype, ch: Challenge, avoid?: string, unavailableIds: Iterable<string> = []): Champion {
     const p = this.pool(role, arch, ch)
+    return this.pickAvailable(p, avoid, unavailableIds)
+  }
+
+  reroll(role: Role, ch: Challenge, current: Champion | null, unavailableIds: Iterable<string> = [], seenIds: Iterable<string> = []): Champion {
+    const candidates = this.rerollPool(role, ch)
+    const unavailable = new Set(unavailableIds)
+    if (current) unavailable.add(current.id)
+    const available = candidates.filter(champion => !unavailable.has(champion.id))
+    const seen = new Set(seenIds)
+    const fresh = available.filter(champion => !seen.has(champion.id))
+    const pool = fresh.length ? fresh : available
+
+    // A different class gives repeated rerolls a noticeably different feel.
+    // Fall back gracefully for small role/challenge pools or multi-class champs.
+    const differentClass = current
+      ? pool.filter(champion => !champion.classes.some(championClass => current.classes.includes(championClass)))
+      : []
+    return pick(differentClass.length ? differentClass : pool.length ? pool : candidates.filter(champion => champion.id !== current?.id))
+  }
+
+  private pickAvailable(p: Champion[], avoid?: string, unavailableIds: Iterable<string> = []): Champion {
     if (p.length === 1) return p[0]
     const unavailable = new Set(unavailableIds)
     if (avoid) unavailable.add(avoid)
