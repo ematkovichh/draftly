@@ -18,6 +18,15 @@ const BARS: { key: keyof Ratings; label: string; icon: string }[] = [
   { key:'objectiveControl',label:'Objectives',       icon:'🏆' },
 ]
 
+const RADAR_AXES: { key: keyof Ratings; label: string }[] = [
+  { key: 'damage', label: 'Damage' },
+  { key: 'engage', label: 'Engage' },
+  { key: 'tank', label: 'Frontline' },
+  { key: 'lateGame', label: 'Scaling' },
+  { key: 'disengage', label: 'Peel' },
+  { key: 'cc', label: 'Control' },
+]
+
 export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; onClose?: () => void }) {
   const archMeta = ARCHETYPE_META[analysis.archetype as keyof typeof ARCHETYPE_META]
   const tierColor = TIER_COLOR[analysis.tier]
@@ -45,10 +54,13 @@ export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; on
 
       {/* Two-column: bars + insights */}
       <div className="analysis__body">
-        <div className="analysis__bars">
-          {BARS.map(({ key, label, icon }) => (
-            <RatingBar key={key} label={label} icon={icon} value={analysis.ratings[key]} />
-          ))}
+        <div className="analysis__metrics">
+          <RadarChart ratings={analysis.ratings} />
+          <div className="analysis__bars">
+            {BARS.map(({ key, label, icon }) => (
+              <RatingBar key={key} label={label} icon={icon} value={analysis.ratings[key]} />
+            ))}
+          </div>
         </div>
 
         <div className="analysis__insights">
@@ -75,7 +87,27 @@ export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; on
 
       <div className="analysis__detail-grid">
         <section className="analysis__composition" aria-labelledby="composition-stats-title">
-          <h3 id="composition-stats-title">Composition stats</h3>
+          <div className="analysis__section-title">
+            <h3 id="composition-stats-title">Composition profile</h3>
+            <span>Threat and formation balance</span>
+          </div>
+          <div className="composition-charts">
+            <ProfileDonut
+              label="Damage profile"
+              values={[
+                { label: 'AP', value: analysis.draftStats.ap, color: '#9b7de5' },
+                { label: 'AD', value: analysis.draftStats.ad, color: '#d89b52' },
+                { label: 'Mixed', value: analysis.draftStats.mixed, color: '#0ac8b9' },
+              ]}
+            />
+            <ProfileDonut
+              label="Attack range"
+              values={[
+                { label: 'Ranged', value: analysis.draftStats.ranged, color: '#6db8e8' },
+                { label: 'Melee', value: analysis.draftStats.melee, color: '#c8aa6e' },
+              ]}
+            />
+          </div>
           <div className="composition-stats">
             <Stat label="AP threats" value={analysis.draftStats.ap} />
             <Stat label="AD threats" value={analysis.draftStats.ad} />
@@ -125,6 +157,53 @@ export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; on
 
 function Stat({ label, value }: { label: string; value: number }) {
   return <div className="composition-stat"><strong>{value}</strong><span>{label}</span></div>
+}
+
+function RadarChart({ ratings }: { ratings: Ratings }) {
+  const center = 100
+  const radius = 64
+  const point = (index: number, value: number) => {
+    const angle = -Math.PI / 2 + index * (Math.PI * 2 / RADAR_AXES.length)
+    const distance = radius * value / 100
+    return [center + Math.cos(angle) * distance, center + Math.sin(angle) * distance]
+  }
+  const polygon = (value: number) => RADAR_AXES.map((_, index) => point(index, value).join(',')).join(' ')
+  const dataPoints = RADAR_AXES.map(({ key }, index) => point(index, ratings[key]).join(',')).join(' ')
+
+  return (
+    <figure className="radar" aria-label="Team capability radar chart">
+      <figcaption><strong>Team shape</strong><span>Six core draft dimensions</span></figcaption>
+      <svg viewBox="0 0 200 200" role="img" aria-label={RADAR_AXES.map(axis => `${axis.label} ${ratings[axis.key]}`).join(', ')}>
+        {[25, 50, 75, 100].map(level => <polygon key={level} points={polygon(level)} className="radar__grid" />)}
+        {RADAR_AXES.map((axis, index) => {
+          const [x, y] = point(index, 100)
+          const [labelX, labelY] = point(index, 123)
+          return <g key={axis.key}><line x1={center} y1={center} x2={x} y2={y} className="radar__axis" /><text x={labelX} y={labelY} className="radar__label">{axis.label}</text></g>
+        })}
+        <motion.polygon points={dataPoints} className="radar__data" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: .65, ease: 'easeOut' }} />
+        {RADAR_AXES.map(({ key }, index) => { const [x, y] = point(index, ratings[key]); return <circle key={key} cx={x} cy={y} r="2.4" className="radar__point" /> })}
+      </svg>
+    </figure>
+  )
+}
+
+function ProfileDonut({ label, values }: { label: string; values: { label: string; value: number; color: string }[] }) {
+  const total = values.reduce((sum, item) => sum + item.value, 0) || 1
+  let cursor = 0
+  const stops = values.map(item => {
+    const start = cursor
+    cursor += item.value / total * 100
+    return `${item.color} ${start}% ${cursor}%`
+  }).join(', ')
+  return (
+    <div className="profile-donut">
+      <div className="profile-donut__chart" style={{ background: `conic-gradient(${stops})` }} aria-hidden="true"><span>{values.reduce((sum, item) => sum + item.value, 0)}</span></div>
+      <div className="profile-donut__copy">
+        <strong>{label}</strong>
+        <div className="profile-donut__legend">{values.map(item => <span key={item.label}><i style={{ background: item.color }} />{item.label} <b>{item.value}</b></span>)}</div>
+      </div>
+    </div>
+  )
 }
 
 function GradeBadge({ tier, score, color }: { tier: Tier; score: number; color: string }) {
