@@ -4,6 +4,7 @@ export interface RawChampion {
   id: string; key: number; name: string; title: string
   tags: ChampClass[]; partype: string; info: RiotInfo; stats: BaseStats
   abilities: { name?: string; description?: string; tooltip?: string }[]
+  roles?: Role[]
 }
 
 export interface ChampionDataResult { patch: string; source: string; champions: RawChampion[] }

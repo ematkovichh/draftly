@@ -16,3 +16,13 @@
 .data-chip small { color: var(--text-dim); text-transform: uppercase; letter-spacing: .12em; font-size: .58rem; }
 .data-chip em { color: var(--text-bright); font-style: normal; font-weight: 600; }
 .data-chip__val--dim { color: var(--text-dim) !important; font-style: italic !important; }
+
+@media (max-width: 560px) {
+  .header { padding: 14px 0; align-items: flex-start; }
+  .header__brand { gap: 10px; }
+  .header__hex { width: 34px; height: 34px; }
+  .header__title { font-size: 1.35rem; letter-spacing: .22em; }
+  .header__sub { font-size: .55rem; letter-spacing: .16em; }
+  .header__databar { width: 100%; gap: 4px; }
+  .data-chip { padding: 4px 7px; }
+}

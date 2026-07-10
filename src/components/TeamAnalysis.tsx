@@ -11,13 +11,14 @@ const BARS: { key: keyof Ratings; label: string; icon: string }[] = [
   { key:'tank',            label:'Frontline',        icon:'🛡' },
   { key:'cc',              label:'Crowd Control',    icon:'⛓' },
   { key:'engage',          label:'Engage',           icon:'⚡' },
+  { key:'earlyGame',       label:'Early Game',       icon:'☀' },
   { key:'lateGame',        label:'Late Game',        icon:'📈' },
   { key:'poke',            label:'Poke',             icon:'🎯' },
   { key:'disengage',       label:'Disengage',        icon:'💨' },
   { key:'objectiveControl',label:'Objectives',       icon:'🏆' },
 ]
 
-export function TeamAnalysis({ analysis }: { analysis: TeamAnalysis }) {
+export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; onClose?: () => void }) {
   const archMeta = ARCHETYPE_META[analysis.archetype as keyof typeof ARCHETYPE_META]
   const tierColor = TIER_COLOR[analysis.tier]
 
@@ -34,6 +35,7 @@ export function TeamAnalysis({ analysis }: { analysis: TeamAnalysis }) {
         </div>
 
         <div className="analysis__grade-area">
+          {onClose && <button type="button" className="analysis__close" onClick={onClose} aria-label="Close team statistics">Close stats ×</button>}
           <SynergyRing synergy={analysis.synergy} label={analysis.synergyLabel} />
           <GradeBadge tier={analysis.tier} score={analysis.overall} color={tierColor} />
         </div>
@@ -70,8 +72,59 @@ export function TeamAnalysis({ analysis }: { analysis: TeamAnalysis }) {
           )}
         </div>
       </div>
+
+      <div className="analysis__detail-grid">
+        <section className="analysis__composition" aria-labelledby="composition-stats-title">
+          <h3 id="composition-stats-title">Composition stats</h3>
+          <div className="composition-stats">
+            <Stat label="AP threats" value={analysis.draftStats.ap} />
+            <Stat label="AD threats" value={analysis.draftStats.ad} />
+            <Stat label="Mixed" value={analysis.draftStats.mixed} />
+            <Stat label="Frontline" value={analysis.draftStats.frontline} />
+            <Stat label="Ranged" value={analysis.draftStats.ranged} />
+            <Stat label="Melee" value={analysis.draftStats.melee} />
+          </div>
+        </section>
+
+        <section className="analysis__counters" aria-labelledby="counter-signals-title">
+          <div className="analysis__section-title">
+            <h3 id="counter-signals-title">Counter-readiness</h3>
+            <span>Derived composition signals</span>
+          </div>
+          <div className="counter-list">
+            {analysis.counterSignals.map(signal => (
+              <div className="counter-signal" key={signal.opponent}>
+                <div><strong>Vs {signal.opponent}</strong><span>{signal.label}</span></div>
+                <div className="counter-signal__score"><i><b style={{ width: `${signal.score}%` }} /></i><em>{signal.score}</em></div>
+                <p>{signal.detail}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="analysis__counter-picks" aria-labelledby="counter-picks-title">
+          <div className="analysis__section-title">
+            <h3 id="counter-picks-title">Likely counter ideas</h3>
+            <span>Composition guidance, not live matchup rates</span>
+          </div>
+          <div className="counter-picks">
+            {analysis.counterRecommendations.map(recommendation => (
+              <article className="counter-pick" key={recommendation.comp}>
+                <strong>{recommendation.comp}</strong>
+                <p><b>Suggested champions:</b> {recommendation.champions.join(' · ')}</p>
+                <p><b>Pressures:</b> {recommendation.targets.join(' · ')}</p>
+                <p>{recommendation.why}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   )
+}
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return <div className="composition-stat"><strong>{value}</strong><span>{label}</span></div>
 }
 
 function GradeBadge({ tier, score, color }: { tier: Tier; score: number; color: string }) {

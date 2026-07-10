@@ -3,7 +3,7 @@ export type ChampClass = 'Fighter' | 'Tank' | 'Mage' | 'Assassin' | 'Marksman' |
 export type DamageType = 'AP' | 'AD' | 'Mixed'
 export type RangeType = 'melee' | 'ranged'
 export type Archetype = 'teamfight' | 'poke' | 'dive' | 'scaling' | 'siege' | 'random'
-export type Challenge = 'none' | 'fullAP' | 'fullAD' | 'yordle' | 'oldSchool' | 'offMeta'
+export type Challenge = 'none' | 'fullAP' | 'fullAD' | 'yordle' | 'oldSchool' | 'offMeta' | 'allMelee' | 'allRanged' | 'earlyGame'
 export type Tier = 'S' | 'A' | 'B' | 'C' | 'D' | 'F'
 
 export interface BaseStats {
@@ -13,8 +13,8 @@ export interface BaseStats {
   attackrange: number; movespeed: number; hpregen: number; mp: number
 }
 export interface RiotInfo { attack: number; defense: number; magic: number; difficulty: number }
-export interface RawMetrics { damage: number; cc: number; tank: number; engage: number; scaling: number; poke: number; disengage: number; objectiveControl: number }
-export interface Ratings { damage: number; cc: number; tank: number; engage: number; lateGame: number; poke: number; disengage: number; objectiveControl: number }
+export interface RawMetrics { damage: number; cc: number; tank: number; engage: number; scaling: number; earlyGame: number; poke: number; disengage: number; objectiveControl: number }
+export interface Ratings { damage: number; cc: number; tank: number; engage: number; lateGame: number; earlyGame: number; poke: number; disengage: number; objectiveControl: number }
 export interface MetaStats { source: string; patch: string; winRate?: number; pickRate?: number; banRate?: number }
 
 export interface Champion {
@@ -37,5 +37,8 @@ export interface TeamAnalysis {
   suggestions: string[]; notes: string[]
   basis: string
   meta: { connected: boolean; avgWinRate?: number; source?: string }
+  draftStats: { ap: number; ad: number; mixed: number; melee: number; ranged: number; frontline: number }
+  counterSignals: { opponent: string; score: number; label: string; detail: string }[]
+  counterRecommendations: { comp: string; champions: string[]; targets: string[]; why: string }[]
 }
 export interface DatasetInfo { patch: string; championDataSource: string; metaSource: string | null; championCount: number }

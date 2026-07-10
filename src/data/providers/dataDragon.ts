@@ -1,5 +1,6 @@
 import type { BaseStats, ChampClass, RiotInfo, Role } from '../../core/types'
 import type { ChampionDataProvider, ChampionDataResult, RawChampion } from './types'
+import { referenceRolesFor } from '../reference'
 
 const HOST = 'https://ddragon.leagueoflegends.com'
 const VALID_CLASSES: ChampClass[] = ['Fighter','Tank','Mage','Assassin','Marksman','Support']
@@ -156,9 +157,10 @@ export class DataDragonProvider implements ChampionDataProvider {
         { name: c.passive.name, description: c.passive.description },
         ...c.spells.map(s => ({ name: s.name, description: s.description, tooltip: s.tooltip })),
       ],
-      // roles inferred from real attributes — override with meta provider for live data
-      _roles: inferRoles(c.id, c.tags.filter((t): t is ChampClass => VALID_CLASSES.includes(t as ChampClass)), pickStats(c.stats), c.partype),
-    } as RawChampion & { _roles: Role[] }))
+      // Lane mapping is explicit and reviewable; new releases retain a safe fallback
+      // until the reference is updated. A role-aware meta provider can override both.
+      roles: referenceRolesFor(c.id) ?? inferRoles(c.id, c.tags.filter((t): t is ChampClass => VALID_CLASSES.includes(t as ChampClass)), pickStats(c.stats), c.partype),
+    }))
 
     return { patch: version, source: this.label, champions }
   }

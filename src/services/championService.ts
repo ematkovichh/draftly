@@ -2,16 +2,23 @@ import type { Champion, DatasetInfo, MetaStats, RawMetrics, Role } from '../core
 import { championDataProvider, metaStatsProvider } from '../data/providers/registry'
 import { deriveRawMetrics, rangeTypeFrom, damageTypeFrom } from '../core/analysis/derive'
 import { normalizeRoster, deriveArchetypes } from '../core/analysis/engine'
-import type { RawChampion } from '../data/providers/types'
-
-// Lore-based yordle list (no official data field)
-const YORDLES = new Set(['Corki','Heimerdinger','Kennen','Kled','Lulu','Poppy','Rumble','Teemo','Tristana','Veigar','Vex','Ziggs','Gnar','Kled'])
-// Off-meta reference (low-presence picks)
-const OFF_META_REF = new Set(['Teemo','Quinn','Heimerdinger','Singed','Mordekaiser','Fiddlesticks'])
+import { isOffMetaReference, isYordle } from '../data/reference'
 
 export interface ChampionDataset { champions: Champion[]; byId: Map<string, Champion>; info: DatasetInfo }
 
-export async function loadChampions(): Promise<ChampionDataset> {
+let datasetRequest: Promise<ChampionDataset> | null = null
+
+export function loadChampions(): Promise<ChampionDataset> {
+  if (!datasetRequest) {
+    datasetRequest = buildDataset().catch(error => {
+      datasetRequest = null
+      throw error
+    })
+  }
+  return datasetRequest
+}
+
+async function buildDataset(): Promise<ChampionDataset> {
   const data = await championDataProvider.fetchChampions()
 
   let meta: { byChampion: Record<string, MetaStats>; rolesByChampion?: Record<string, Role[]>; source: string } | null = null
@@ -20,21 +27,23 @@ export async function loadChampions(): Promise<ChampionDataset> {
       const r = await metaStatsProvider.fetchMeta()
       meta = { byChampion: r.byChampion, rolesByChampion: r.rolesByChampion, source: r.source }
     }
-  } catch (e) { console.warn('Meta unavailable:', e) }
+  } catch {
+    // Meta data is optional; keep the base draft usable without console noise.
+  }
 
-  const all = data.champions as (RawChampion & { _roles?: Role[] })[]
+  const all = data.champions
   const rawMetrics: RawMetrics[] = all.map(c => deriveRawMetrics(c.info, c.stats, c.tags, c.abilities))
   const ratingsList = normalizeRoster(rawMetrics)
 
   const champions: Champion[] = all.map((c, i) => {
-    const roles = meta?.rolesByChampion?.[c.id] ?? (c as any)._roles ?? ['top']
+    const roles = meta?.rolesByChampion?.[c.id] ?? c.roles ?? ['top']
     const ratings = ratingsList[i]
     return {
       id: c.id, key: c.key, name: c.name, title: c.title,
       classes: c.tags, partype: c.partype, roles,
       damageType: damageTypeFrom(c.info), rangeType: rangeTypeFrom(c.stats),
       archetypes: deriveArchetypes(ratings, c.tags),
-      yordle: YORDLES.has(c.id), offMetaRef: OFF_META_REF.has(c.id),
+      yordle: isYordle(c.id), offMetaRef: isOffMetaReference(c.id),
       info: c.info, base: c.stats, rawMetrics: rawMetrics[i], ratings,
       meta: meta?.byChampion[c.id] ?? null,
     }

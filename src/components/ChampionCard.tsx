@@ -10,31 +10,32 @@ interface Props {
   champion: Champion
   role: Role
   index: number
-  onReroll: () => void
+  onReroll?: () => void
   isNew?: boolean
+  isReroll?: boolean
 }
 
-export function ChampionCard({ champion, role, index, onReroll, isNew }: Props) {
+export function ChampionCard({ champion, role, index, onReroll, isNew, isReroll }: Props) {
   const [imgLoaded, setImgLoaded] = useState(false)
   const [imgError, setImgError] = useState(false)
 
-  const splashSrc = imgError
+  const portraitSrc = imgError
     ? championDataProvider.squareUrl(champion.id)
-    : championDataProvider.splashUrl(champion.id)
+    : championDataProvider.loadingUrl(champion.id)
 
   return (
     <motion.div
-      className="card"
-      layout
-      initial={isNew ? { opacity: 0, y: 28, scale: 0.93 } : false}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.45, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+      className={`card${isNew ? ' card--new' : ''}${isReroll ? ' card--reroll' : ''}`}
+      initial={isNew ? isReroll ? { opacity: 0, scale: 0.82, filter: 'blur(3px)' } : { opacity: 0, y: 38, scale: 0.9, filter: 'blur(4px)' } : false}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      whileHover={{ y: -4, scale: 1.012 }}
+      transition={isReroll ? { type: 'spring', stiffness: 520, damping: 25 } : { type: 'spring', stiffness: 260, damping: 22, delay: index * 0.08 }}
     >
       {/* Art */}
       <div className="card__art">
         {!imgLoaded && <div className="card__shimmer" />}
         <img
-          src={splashSrc}
+          src={portraitSrc}
           alt={champion.name}
           className={`card__img card__img--${champion.id}`}
           onLoad={() => setImgLoaded(true)}
@@ -64,17 +65,18 @@ export function ChampionCard({ champion, role, index, onReroll, isNew }: Props) 
           {champion.archetypes.slice(0, 2).map(a => (
             <span key={a} className={`card__arch card__arch--${a}`}>{a}</span>
           ))}
+          {champion.ratings.earlyGame >= 60 && <span className="card__arch card__arch--early">early</span>}
           {champion.yordle && <span className="card__arch card__arch--yordle">yordle</span>}
         </div>
       </div>
 
       {/* Reroll */}
-      <button className="card__reroll" onClick={onReroll} title="Reroll this slot">
+      {onReroll && <button type="button" className="card__reroll" onClick={onReroll} aria-label={`Reroll ${ROLE_LABEL[role]}: ${champion.name}`} title="Reroll this slot">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
           <path d="M23 4v6h-6M1 20v-6h6" /><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
         </svg>
         Reroll
-      </button>
+      </button>}
     </motion.div>
   )
 }

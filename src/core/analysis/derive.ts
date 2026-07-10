@@ -39,5 +39,9 @@ export function deriveRawMetrics(
   const scaling = growthRatio * 22 + (carryClass ? 6 : 0) + info.magic * 0.6
 
   const parsed = parseAbilities(abilities)
-  return { damage, tank, scaling, ...parsed }
+  // Early strength is based on real level-one combat stats plus Riot's attack,
+  // magic, and defence ratings. It intentionally favours lane pressure and
+  // skirmish readiness rather than late-game growth.
+  const earlyGame = Math.max(info.attack, info.magic) * 9 + base.hp * .045 + base.armor * .8 + base.attackdamage * base.attackspeed * .5 + parsed.cc * 1.5 + parsed.engage
+  return { damage, tank, scaling, earlyGame, ...parsed }
 }

@@ -1,5 +1,5 @@
 {
-  "_comment": "Maintained reference data. Riot provides no official lane/role, yordle, or off-meta dataset; these are factual categorisations, NOT scores. A connected MetaStatsProvider overrides roles/offMeta at runtime.",
+  "_comment": "Maintained lane reference for the Riot Data Dragon 16.13 roster. Riot does not publish canonical lanes, so this is explicit, reviewable community taxonomy. A connected MetaStatsProvider overrides it at runtime; newly released champions use the documented attribute fallback until an entry is added.",
   "roles": {
     "Aatrox": [
       "top"
@@ -308,6 +308,273 @@
     ],
     "Renata": [
       "support"
+    ],
+    "Akshan": [
+      "mid",
+      "top"
+    ],
+    "Ambessa": [
+      "top",
+      "jungle"
+    ],
+    "Anivia": [
+      "mid"
+    ],
+    "AurelionSol": [
+      "mid"
+    ],
+    "Aurora": [
+      "mid",
+      "top"
+    ],
+    "Azir": [
+      "mid"
+    ],
+    "Belveth": [
+      "jungle"
+    ],
+    "Braum": [
+      "support"
+    ],
+    "Briar": [
+      "jungle"
+    ],
+    "Chogath": [
+      "top",
+      "mid"
+    ],
+    "DrMundo": [
+      "top"
+    ],
+    "Evelynn": [
+      "jungle"
+    ],
+    "Fiddlesticks": [
+      "jungle",
+      "support"
+    ],
+    "Gangplank": [
+      "top"
+    ],
+    "Gragas": [
+      "top",
+      "jungle",
+      "mid",
+      "support"
+    ],
+    "Hwei": [
+      "mid",
+      "support"
+    ],
+    "Illaoi": [
+      "top"
+    ],
+    "Irelia": [
+      "top",
+      "mid"
+    ],
+    "Ivern": [
+      "jungle"
+    ],
+    "Jayce": [
+      "top",
+      "mid"
+    ],
+    "Kalista": [
+      "adc"
+    ],
+    "Karthus": [
+      "jungle",
+      "adc"
+    ],
+    "Kassadin": [
+      "mid"
+    ],
+    "Kayle": [
+      "top",
+      "mid"
+    ],
+    "Kindred": [
+      "jungle"
+    ],
+    "Leblanc": [
+      "mid"
+    ],
+    "Lillia": [
+      "jungle",
+      "top"
+    ],
+    "Lissandra": [
+      "mid",
+      "support"
+    ],
+    "Locke": [
+      "mid"
+    ],
+    "Maokai": [
+      "jungle",
+      "support",
+      "top"
+    ],
+    "Mel": [
+      "mid",
+      "support"
+    ],
+    "Milio": [
+      "support"
+    ],
+    "Naafiri": [
+      "mid",
+      "jungle"
+    ],
+    "Nasus": [
+      "top"
+    ],
+    "Neeko": [
+      "mid",
+      "support",
+      "jungle"
+    ],
+    "Nilah": [
+      "adc"
+    ],
+    "Nocturne": [
+      "jungle"
+    ],
+    "Olaf": [
+      "top",
+      "jungle"
+    ],
+    "Pantheon": [
+      "top",
+      "jungle",
+      "mid",
+      "support"
+    ],
+    "Qiyana": [
+      "mid",
+      "jungle"
+    ],
+    "RekSai": [
+      "jungle"
+    ],
+    "Rell": [
+      "jungle",
+      "support"
+    ],
+    "Ryze": [
+      "mid",
+      "top"
+    ],
+    "Samira": [
+      "adc"
+    ],
+    "Seraphine": [
+      "support",
+      "adc",
+      "mid"
+    ],
+    "Shaco": [
+      "jungle",
+      "support"
+    ],
+    "Shyvana": [
+      "jungle"
+    ],
+    "Singed": [
+      "top"
+    ],
+    "Sion": [
+      "top"
+    ],
+    "Skarner": [
+      "jungle",
+      "top"
+    ],
+    "Smolder": [
+      "adc",
+      "mid"
+    ],
+    "Sona": [
+      "support"
+    ],
+    "Swain": [
+      "support",
+      "mid",
+      "adc"
+    ],
+    "Sylas": [
+      "mid",
+      "jungle"
+    ],
+    "TahmKench": [
+      "top",
+      "support"
+    ],
+    "Taliyah": [
+      "jungle",
+      "mid"
+    ],
+    "Talon": [
+      "mid",
+      "jungle"
+    ],
+    "Taric": [
+      "support",
+      "jungle"
+    ],
+    "Trundle": [
+      "jungle",
+      "top",
+      "support"
+    ],
+    "Tryndamere": [
+      "top",
+      "jungle"
+    ],
+    "Udyr": [
+      "jungle",
+      "top"
+    ],
+    "Urgot": [
+      "top"
+    ],
+    "Vex": [
+      "mid"
+    ],
+    "Viego": [
+      "jungle"
+    ],
+    "Volibear": [
+      "jungle",
+      "top"
+    ],
+    "XinZhao": [
+      "jungle"
+    ],
+    "Yone": [
+      "mid",
+      "top"
+    ],
+    "Yorick": [
+      "top"
+    ],
+    "Yunara": [
+      "adc"
+    ],
+    "Zaahen": [
+      "top",
+      "jungle"
+    ],
+    "Zeri": [
+      "adc"
+    ],
+    "Zilean": [
+      "support",
+      "mid"
+    ],
+    "Zoe": [
+      "mid"
     ]
   },
   "yordles": [
@@ -322,7 +589,9 @@
     "Heimerdinger",
     "Tristana",
     "Corki",
-    "Lulu"
+    "Lulu",
+    "Vex",
+    "Yuumi"
   ],
   "offMetaReference": [
     "Quinn",

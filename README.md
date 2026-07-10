@@ -25,7 +25,7 @@ https://ematkovichh.github.io/draftly/
 - Role-accurate generation (Top / Jungle / Mid / Bot / Support) + per-role reroll
 - Archetypes (Dive / Poke / Teamfight / Scaling) derived from real ratings
 - Challenge modes: Off-Meta, Old School (real release order), Full AP, Full AD,
-  Yordle
+  Strong Early Game, All Melee, All Ranged, Yordle
 - Team analysis with F–S tier, rating bars, and transparent data-basis note
 - Share-via-URL and copy-to-clipboard
 - Hextech / League-client aesthetic
