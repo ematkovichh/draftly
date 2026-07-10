@@ -95,9 +95,9 @@ export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; on
             <ProfileDonut
               label="Damage profile"
               values={[
-                { label: 'AP', value: analysis.draftStats.ap, color: '#9b7de5' },
-                { label: 'AD', value: analysis.draftStats.ad, color: '#d89b52' },
-                { label: 'Mixed', value: analysis.draftStats.mixed, color: '#0ac8b9' },
+                { label: 'Magic', value: analysis.draftStats.ap, color: '#9b7de5' },
+                { label: 'Physical', value: analysis.draftStats.ad, color: '#d89b52' },
+                { label: 'Hybrid', value: analysis.draftStats.mixed, color: '#0ac8b9' },
               ]}
             />
             <ProfileDonut
@@ -109,9 +109,9 @@ export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; on
             />
           </div>
           <div className="composition-stats">
-            <Stat label="AP threats" value={analysis.draftStats.ap} />
-            <Stat label="AD threats" value={analysis.draftStats.ad} />
-            <Stat label="Mixed" value={analysis.draftStats.mixed} />
+            <Stat label="Magic profiles" value={analysis.draftStats.ap} />
+            <Stat label="Physical profiles" value={analysis.draftStats.ad} />
+            <Stat label="Hybrid profiles" value={analysis.draftStats.mixed} />
             <Stat label="Frontline" value={analysis.draftStats.frontline} />
             <Stat label="Ranged" value={analysis.draftStats.ranged} />
             <Stat label="Melee" value={analysis.draftStats.melee} />
@@ -120,8 +120,8 @@ export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; on
 
         <section className="analysis__counters" aria-labelledby="counter-signals-title">
           <div className="analysis__section-title">
-            <h3 id="counter-signals-title">Counter-readiness</h3>
-            <span>Derived composition signals</span>
+            <h3 id="counter-signals-title">Estimated resilience</h3>
+              <span>Heuristic draft signals</span>
           </div>
           <div className="counter-list">
             {analysis.counterSignals.map(signal => (
@@ -136,8 +136,8 @@ export function TeamAnalysis({ analysis, onClose }: { analysis: TeamAnalysis; on
 
         <section className="analysis__counter-picks" aria-labelledby="counter-picks-title">
           <div className="analysis__section-title">
-            <h3 id="counter-picks-title">Likely counter ideas</h3>
-            <span>Composition guidance, not live matchup rates</span>
+            <h3 id="counter-picks-title">General draft responses</h3>
+            <span>Ideas only — not live matchup or win-rate data</span>
           </div>
           <div className="counter-picks">
             {analysis.counterRecommendations.map(recommendation => (
@@ -218,7 +218,7 @@ function GradeBadge({ tier, score, color }: { tier: Tier; score: number; color: 
       </motion.span>
       <motion.span className="grade__score"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .55 }}>
-        {score}/100
+        {score}/100 balance
       </motion.span>
       <span className="grade__label" style={{ color }}>{TIER_LABEL[tier]}</span>
     </motion.div>
@@ -240,7 +240,7 @@ function SynergyRing({ synergy, label }: { synergy: number; label: string }) {
           style={{ transformOrigin: '34px 34px', rotate: '-90deg' }} />
         <text x="34" y="38" textAnchor="middle" fill={synergyColor} fontSize="13" fontWeight="700" fontFamily="var(--font-display)">{synergy}</text>
       </svg>
-      <span className="synergy__label">Synergy</span>
+      <span className="synergy__label">Archetype fit</span>
       <span className="synergy__grade" style={{ color: synergyColor }}>{label}</span>
     </div>
   )

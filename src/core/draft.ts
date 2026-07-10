@@ -1,8 +1,9 @@
-import type { Archetype, Challenge, Champion, Role, Team } from './types'
+import type { Archetype, Challenge, Champion, DamageType, Role, Team } from './types'
 
 export const ROLES: Role[] = ['top', 'jungle', 'mid', 'adc', 'support']
 export const ROLE_LABEL: Record<Role, string> = { top: 'Top', jungle: 'Jungle', mid: 'Mid', adc: 'Bot', support: 'Support' }
 export const BAN_LIMIT = 5
+export const DAMAGE_LABEL: Record<DamageType, string> = { AP: 'Magic', AD: 'Physical', Mixed: 'Hybrid' }
 
 export const ARCHETYPE_META: Record<Exclude<Archetype,'random'>, { icon: string; color: string }> = {
   teamfight: { icon: '⚔', color: '#c8aa6e' },
@@ -14,8 +15,8 @@ export const ARCHETYPE_META: Record<Exclude<Archetype,'random'>, { icon: string;
 
 export const CHALLENGE_META: Record<Challenge, { label: string }> = {
   none:      { label: 'No Challenge' },
-  fullAP:    { label: 'Full AP' },
-  fullAD:    { label: 'Full AD' },
+  fullAP:    { label: 'Magic-focused' },
+  fullAD:    { label: 'Physical-focused' },
   yordle:    { label: 'Yordle Only' },
   oldSchool: { label: 'Old School' },
   offMeta:   { label: 'Off Meta' },

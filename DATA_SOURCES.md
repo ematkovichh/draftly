@@ -10,14 +10,15 @@ how to wire those APIs in** without touching the rest of the app.
 |---|---|---|---|
 | Champion identity, base stats, growth, class tags, resource | Riot **Data Dragon** | ✅ Live | No |
 | Riot `info` ratings (attack/defense/magic/difficulty) | Riot **Data Dragon** | ✅ Live | No |
-| Spell + passive text (→ CC / engage detection) | Riot **Data Dragon** | ✅ Live | No |
+| Spell + passive text (→ CC / engage and damage-profile estimation) | Riot **Data Dragon** | ✅ Live | No |
 | Splash / loading / square art | Riot **Data Dragon** | ✅ Live | No |
 | Lane / role assignment | *no official source* | Maintained reference, pluggable | Optional |
 | Win rate / pick rate / ban rate | aggregation or 3rd-party | 🔌 Provider interface ready | **Yes** |
 | Counters / synergies | aggregation or 3rd-party | 🔌 Provider interface ready | **Yes** |
 
-**Nothing is fabricated.** Every draft rating is derived from the live Data
-Dragon attributes (see "How ratings are derived" below). The meta fields
+**No derived score is presented as a live performance statistic.** Draft
+ratings are transparent heuristics derived from live Data Dragon attributes
+(see "How ratings are derived" below). The meta fields
 (win/pick/ban/counters/synergies) are shown as *"not connected"* until you
 attach a provider — Draftly never invents them.
 
@@ -44,7 +45,7 @@ https://ddragon.leagueoflegends.com/cdn/<ver>/img/champion/<id>.png
 Implemented in `src/data/providers/dataDragon.ts`.
 
 > Optional upgrade: **Meraki Analytics** (`cdn.merakianalytics.com`, CORS-ok)
-> publishes enriched ability data with exact CC durations and damage values.
+> publishes enriched ability data with more detailed CC durations and damage values.
 > Adding a `MerakiProvider` would sharpen CC/engage scoring. It still does
 > **not** provide win/pick/ban.
 

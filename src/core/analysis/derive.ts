@@ -12,10 +12,40 @@ export function rangeTypeFrom(stats: BaseStats): RangeType {
   return stats.attackrange >= 350 ? 'ranged' : 'melee'
 }
 
-export function damageTypeFrom(info: RiotInfo): DamageType {
-  if (info.magic - info.attack >= 2) return 'AP'
-  if (info.attack - info.magic >= 2) return 'AD'
-  return 'Mixed'
+// Champions whose common damage profile cannot be described reliably by a
+// simple count of ability descriptions (hybrid builds, empowered attacks, or
+// unusual conversions). Keep these explicit and reviewable.
+const DAMAGE_PROFILE_OVERRIDES: Record<string, DamageType> = {
+  Akali: 'AP', Azir: 'AP', Diana: 'AP', Fizz: 'AP', Gwen: 'AP', Kennen: 'AP', Mordekaiser: 'AP', Teemo: 'AP',
+  Corki: 'Mixed', DrMundo: 'Mixed', Ezreal: 'Mixed', Jax: 'Mixed', Kaisa: 'Mixed', Kayle: 'Mixed',
+  KogMaw: 'Mixed', Nasus: 'Mixed', Ornn: 'Mixed', Sejuani: 'Mixed', Shen: 'Mixed', Shyvana: 'Mixed',
+  TwistedFate: 'Mixed', Udyr: 'Mixed', Varus: 'Mixed', Volibear: 'Mixed', Warwick: 'Mixed',
+  Locke: 'AD', Zaahen: 'AD',
+}
+
+/**
+ * Estimates a champion's normal damage profile from Riot's ability text and
+ * class tags. Riot's `info.attack` / `info.magic` fields are difficulty-style
+ * ratings, not damage-type data, and must never be used for this label.
+ */
+export function damageTypeFrom(id: string, classes: ChampClass[], abilities: AbilityText[]): DamageType {
+  const override = DAMAGE_PROFILE_OVERRIDES[id]
+  if (override) return override
+
+  let physical = classes.includes('Marksman') ? 2.5 : 0
+  if (classes.includes('Fighter')) physical += 1.25
+  if (classes.includes('Assassin')) physical += .5
+
+  let magic = 0
+  for (const ability of abilities) {
+    const text = `${ability.description ?? ''} ${ability.tooltip ?? ''}`.toLocaleLowerCase()
+    if (text.includes('physical damage')) physical += 1
+    if (text.includes('magic damage')) magic += 1
+  }
+
+  if (physical >= magic * 1.5 && physical > 0) return 'AD'
+  if (magic >= physical * 1.5 && magic > 0) return 'AP'
+  return physical || magic ? 'Mixed' : classes.includes('Mage') ? 'AP' : 'AD'
 }
 
 const EVAL = 13

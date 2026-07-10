@@ -55,13 +55,13 @@
   display: flex; align-items: center; gap: 5px;
   background: rgba(1,10,19,.72); border: 1px solid var(--line-bright);
   padding: 4px 8px; backdrop-filter: blur(4px);
-  font-size: .62rem; font-weight: 700; letter-spacing: .1em;
+  font-size: .69rem; font-weight: 700; letter-spacing: .08em;
   text-transform: uppercase; color: var(--gold);
 }
 .card__role-badge svg { width: 13px; height: 13px; }
 
 .card__dmg-badge {
-  font-size: .58rem; font-weight: 800; letter-spacing: .1em;
+  font-size: .64rem; font-weight: 800; letter-spacing: .07em;
   padding: 3px 7px; text-transform: uppercase;
 }
 .card__dmg-badge--AP  { background: rgba(100,60,180,.5);  color: #c8a2ff; border: 1px solid rgba(155,89,255,.3); }
@@ -81,13 +81,13 @@
   text-shadow: 0 1px 8px rgba(0,0,0,.8);
 }
 .card__title {
-  font-size: .58rem; color: var(--text-dim);
+  font-size: .67rem; color: var(--text-dim);
   letter-spacing: .06em; margin-top: 2px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .card__tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .card__arch {
-  font-size: .56rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  font-size: .62rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
   padding: 2px 6px; border: 1px solid;
 }
 .card__arch--teamfight { border-color: rgba(200,170,110,.4); color: var(--gold); background: rgba(200,170,110,.08); }
@@ -103,7 +103,7 @@
   position: absolute; right: 10px; bottom: 10px;
   display: flex; align-items: center; gap: 5px;
   background: rgba(1,10,19,.8); border: 1px solid var(--line-bright);
-  color: var(--text-dim); font-size: .6rem; font-weight: 600;
+  color: var(--text-dim); font-size: .67rem; font-weight: 600;
   letter-spacing: .1em; text-transform: uppercase;
   min-height: 34px; padding: 7px 9px; backdrop-filter: blur(4px);
   transition: all .15s; opacity: 1;
@@ -119,9 +119,9 @@
 @media (max-width: 430px) {
   .card { aspect-ratio: 1 / 1.18; }
   .card__top { padding: 7px 7px 0; }
-  .card__role-badge { padding: 3px 5px; font-size: .52rem; }
-  .card__dmg-badge { padding: 3px 5px; font-size: .5rem; }
+  .card__role-badge { padding: 3px 5px; font-size: .58rem; }
+  .card__dmg-badge { padding: 3px 5px; font-size: .57rem; }
   .card__bottom { padding: 8px 60px 8px 8px; }
   .card__title, .card__tags { display: none; }
-  .card__reroll { bottom: 6px; right: 6px; min-height: 30px; padding: 5px 6px; font-size: .52rem; }
+  .card__reroll { bottom: 6px; right: 6px; min-height: 32px; padding: 5px 6px; font-size: .58rem; }
 }

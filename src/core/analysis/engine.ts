@@ -67,9 +67,11 @@ export function analyzeTeam(team: Team, requestedArchetype: Archetype): TeamAnal
   const hasCarry = champs.some(c => c.classes.includes('Marksman') || c.classes.includes('Mage'))
   const diversityBonus = Math.min(classes.size, 5) * 0.9 + (hasFront && hasCarry ? 3 : 0)
 
-  // Synergy: how many champions fit the requested archetype
-  const arcFit = requestedArchetype === 'random' ? champs.length
-    : champs.filter(c => c.archetypes.includes(requestedArchetype as Exclude<Archetype,'random'>)).length
+  // For a random draft, measure fit against the detected team shape instead
+  // of reporting a misleading automatic 100%.
+  const domArch = detectDominantArchetype(r)
+  const fitArchetype = requestedArchetype === 'random' ? domArch : requestedArchetype
+  const arcFit = champs.filter(c => c.archetypes.includes(fitArchetype as Exclude<Archetype,'random'>)).length
   const synergyRaw = arcFit / champs.length
   const synergy = Math.round(synergyRaw * 100)
   const archetypeBonus = synergyRaw * 8
@@ -87,9 +89,6 @@ export function analyzeTeam(team: Team, requestedArchetype: Archetype): TeamAnal
   }
 
   overall = Math.max(0, Math.min(100, Math.round(overall)))
-
-  // Dominant archetype for this comp
-  const domArch = detectDominantArchetype(r)
 
   // Strengths & weaknesses
   const strengths: string[] = [], weaknesses: string[] = [], suggestions: string[] = []
@@ -126,7 +125,9 @@ export function analyzeTeam(team: Team, requestedArchetype: Archetype): TeamAnal
     synergy, synergyLabel,
     strengths, weaknesses, suggestions,
     notes: [ARCHETYPE_DATA[domArch].desc],
-    basis: metaConnected ? 'Rated from Riot attributes + live win rate.' : 'Rated from Riot champion attributes (stats, class, spell text).',
+    basis: metaConnected
+      ? 'Estimated draft balance from Riot attributes plus the connected live win-rate source.'
+      : 'Estimated draft balance from Riot class, base stats, and ability text — not live performance or matchup data.',
     meta: { connected: metaConnected, avgWinRate, source },
     draftStats,
     counterSignals: counterSignalsFor(r),
@@ -156,12 +157,12 @@ function counterRecommendationsFor(champs: Champion[], r: Ratings, stats: TeamAn
   if (stats.ap >= 3) recommendations.push({
     score: stats.ap * 30, comp: 'Anti-magic frontline', champions: ['Galio', 'Dr. Mundo', 'Maokai'],
     targets: names(champion => champion.damageType === 'AP'),
-    why: 'Magic resistance, sustain, and anti-burst tools reduce an AP-heavy team’s primary damage pattern.',
+    why: 'Magic resistance, sustain, and anti-burst tools can help into a magic-heavy team profile.',
   })
   if (stats.ad >= 3) recommendations.push({
     score: stats.ad * 30, comp: 'Armor-stack front line', champions: ['Malphite', 'Rammus', 'Taric'],
     targets: names(champion => champion.damageType === 'AD'),
-    why: 'High armor and point-and-click disruption are efficient into an AD-heavy damage profile.',
+    why: 'Armor and reliable disruption can help into a physical-heavy team profile.',
   })
   if (r.disengage < 52) recommendations.push({
     score: 100 - r.disengage, comp: 'Hard-engage dive', champions: ['Nocturne', 'Vi', 'Galio'],

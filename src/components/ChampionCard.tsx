@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import type { Champion, Role } from '../core/types'
-import { ROLE_LABEL } from '../core/draft'
+import { DAMAGE_LABEL, ROLE_LABEL } from '../core/draft'
 import { championDataProvider } from '../data/providers/registry'
 import { RoleIcon } from './RoleIcon'
 import './ChampionCard.css'
@@ -52,7 +52,7 @@ export function ChampionCard({ champion, role, index, onReroll, isNew, isReroll 
           <RoleIcon role={role} />
           <span>{ROLE_LABEL[role]}</span>
         </div>
-        <span className={`card__dmg-badge card__dmg-badge--${champion.damageType}`}>{champion.damageType}</span>
+        <span className={`card__dmg-badge card__dmg-badge--${champion.damageType}`}>{DAMAGE_LABEL[champion.damageType]}</span>
       </div>
 
       {/* Bottom info */}

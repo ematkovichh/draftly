@@ -113,7 +113,7 @@ function DraftInsights({ analysis, pickedCount, bans, showStats, isGeneratingSta
         <InsightStat label="Picks" value={`${pickedCount}/5`} />
         <InsightStat label="Bans" value={`${bans}/5`} />
         <InsightStat label="Frontline" value={String(analysis.draftStats.frontline)} />
-        <InsightStat label="AP / AD" value={`${analysis.draftStats.ap} / ${analysis.draftStats.ad}`} />
+        <InsightStat label="Magic / Physical" value={`${analysis.draftStats.ap} / ${analysis.draftStats.ad}`} />
       </div>
       <p className="draft-insights__suggestion"><strong>Suggestion</strong>{showStats ? suggestion : 'Use Generate draft stats above for a two-second composition scan and tailored suggestion.'}</p>
     </section>

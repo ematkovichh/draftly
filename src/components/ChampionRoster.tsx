@@ -1,7 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Champion, Role, Team } from '../core/types'
-import { ROLE_LABEL, ROLES } from '../core/draft'
+import { DAMAGE_LABEL, ROLE_LABEL, ROLES } from '../core/draft'
 import type { ActiveDraftTurn } from '../hooks/useTeam'
 import { championDataProvider } from '../data/providers/registry'
 import { RoleIcon } from './RoleIcon'
@@ -119,7 +119,7 @@ export function ChampionRoster({ champions, team, bans, activeTurn, isLocked, se
                 >
                   <img src={championDataProvider.squareUrl(champion.id)} alt="" loading="lazy" onError={event => { event.currentTarget.hidden = true }} />
                   <span className="roster-card__shade" />
-                  <span className={`roster-card__damage roster-card__damage--${champion.damageType.toLowerCase()}`}>{champion.damageType}</span>
+                  <span className={`roster-card__damage roster-card__damage--${champion.damageType.toLowerCase()}`}>{DAMAGE_LABEL[champion.damageType]}</span>
                   <span className="roster-card__name">{champion.name}</span>
                   <span className="roster-card__class">{champion.classes.join(' · ')}</span>
                   <span className="roster-card__roles">{champion.roles.map(role => ROLE_LABEL[role]).join(' · ')}</span>

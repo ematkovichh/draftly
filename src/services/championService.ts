@@ -41,7 +41,7 @@ async function buildDataset(): Promise<ChampionDataset> {
     return {
       id: c.id, key: c.key, name: c.name, title: c.title,
       classes: c.tags, partype: c.partype, roles,
-      damageType: damageTypeFrom(c.info), rangeType: rangeTypeFrom(c.stats),
+      damageType: damageTypeFrom(c.id, c.tags, c.abilities), rangeType: rangeTypeFrom(c.stats),
       archetypes: deriveArchetypes(ratings, c.tags),
       yordle: isYordle(c.id), offMetaRef: isOffMetaReference(c.id),
       info: c.info, base: c.stats, rawMetrics: rawMetrics[i], ratings,
